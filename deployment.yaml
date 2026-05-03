@@ -1,0 +1,17 @@
+stack-name: autoscaling-demo
+template-file-path: ./template.yaml
+parameters:
+  EnvironmentName: autoscaling-demo
+  VpcCidr: 10.0.0.0/16
+  PublicSubnet1Cidr: 10.0.1.0/24
+  PublicSubnet2Cidr: 10.0.2.0/24
+  PrivateSubnet1Cidr: 10.0.11.0/24
+  PrivateSubnet2Cidr: 10.0.12.0/24
+  InstanceType: t3.micro
+  AsgMinSize: "1"
+  AsgDesiredSize: "1"
+  AsgMaxSize: "4"
+  CpuScaleOutThreshold: "30"
+tags:
+  Project: auto-scaling-lab
+  ManagedBy: cloudformation-git-sync
