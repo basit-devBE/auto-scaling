@@ -51,25 +51,6 @@ Parameters:
     Default: 30
     Description: Average CPU % that triggers scale-out
 
-Mappings:
-  AmiMap:
-    us-east-1:
-      AMI: ami-0c02fb55956c7d316
-    us-east-2:
-      AMI: ami-097a2df4ac947655f
-    us-west-1:
-      AMI: ami-0d9858aa3c6322f73
-    us-west-2:
-      AMI: ami-098e42ae54c764c35
-    eu-west-1:
-      AMI: ami-0d71ea30463e0ff49
-    eu-central-1:
-      AMI: ami-05d34d340fb1d89e5
-    ap-southeast-1:
-      AMI: ami-0c55b159cbfafe1f0
-    ap-northeast-1:
-      AMI: ami-0218d08a1f9dac831
-
 Resources:
 
   VPC:
@@ -314,7 +295,7 @@ Resources:
     Properties:
       LaunchTemplateName: !Sub ${EnvironmentName}-lt
       LaunchTemplateData:
-        ImageId: !FindInMap [ AmiMap, !Ref AWS::Region, AMI ]
+        ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
         InstanceType: !Ref InstanceType
         IamInstanceProfile:
           Arn: !GetAtt Ec2InstanceProfile.Arn
@@ -327,6 +308,7 @@ Resources:
             set -e
 
             yum update -y
+            amazon-linux-extras install epel -y
             yum install -y httpd stress
 
             systemctl enable httpd
