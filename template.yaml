@@ -372,32 +372,7 @@ Resources:
             sed -i 's|#AddHandler cgi-script .cgi|AddHandler cgi-script .cgi .sh|' /etc/httpd/conf/httpd.conf
             mkdir -p /var/www/cgi-bin
 
-            cat > /var/www/html/stress <<'STRESSPAGE'
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <title>Stress Triggered</title>
-              <style>
-                body { font-family: sans-serif; max-width: 600px; margin: 60px auto; padding: 0 20px; }
-                .card { background: #fff3cd; border-radius: 10px; padding: 30px; }
-                a { color: #e74c3c; }
-              </style>
-            </head>
-            <body>
-              <div class="card">
-                <h1>⚡ CPU Stress Started!</h1>
-                <p>Running <code>stress --cpu 2 --timeout 300</code> on this instance for 5 minutes.</p>
-                <p>Go to the <strong>EC2 Console → Auto Scaling Groups → Activity</strong> tab
-                   to watch new instances launch.</p>
-                <p><a href="/">← Back to instance info</a></p>
-              </div>
-            </body>
-            </html>
-            STRESSPAGE
 
-            # Trigger stress as a background process when the page is accessed
-            # Using a simple approach: run stress on page load via a wrapper
             cat > /var/www/html/.htaccess <<'HTACCESS'
             Options +ExecCGI
             HTACCESS
@@ -451,7 +426,7 @@ Resources:
       TargetGroupARNs:
       - !Ref AlbTargetGroup
       HealthCheckType: ELB
-      HealthCheckGracePeriod: 120
+      HealthCheckGracePeriod: 300
       Tags:
       - Key: Name
         Value: !Sub ${EnvironmentName}-asg
