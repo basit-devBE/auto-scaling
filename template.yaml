@@ -295,7 +295,7 @@ Resources:
     Properties:
       LaunchTemplateName: !Sub ${EnvironmentName}-lt
       LaunchTemplateData:
-        ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}'
+        ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
         InstanceType: !Ref InstanceType
         IamInstanceProfile:
           Arn: !GetAtt Ec2InstanceProfile.Arn
@@ -307,9 +307,8 @@ Resources:
             #!/bin/bash
             set -e
 
-            yum update -y
-            amazon-linux-extras install epel -y
-            yum install -y httpd stress
+            dnf update -y
+            dnf install -y httpd stress-ng
 
             systemctl enable httpd
             systemctl start httpd
@@ -356,7 +355,7 @@ Resources:
                 <p>Click the button below to spike CPU on <strong>this instance</strong>.
                    Watch the Auto Scaling Group detect the load and launch new instances.</p>
                 <a href="/stress" class="stress-btn">⚡ Trigger CPU Stress</a>
-                <p class="note">Runs <code>stress --cpu 2 --timeout 300</code> in the background.
+                <p class="note">Runs <code>stress-ng --cpu 2 --timeout 300</code> in the background.
                    Refresh this page every few seconds — the Instance ID above will change
                    as new instances join the target group.</p>
               </div>
@@ -384,7 +383,7 @@ Resources:
             #!/bin/bash
             echo "Content-Type: text/html"
             echo ""
-            stress --cpu 2 --timeout 300 &
+            stress-ng --cpu 2 --timeout 300 &
             echo "<h2>Stress running for 300s on $(hostname)</h2>"
             CGISCRIPT
             chmod +x /var/www/cgi-bin/stress.sh
