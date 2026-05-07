@@ -408,7 +408,7 @@ Resources:
             Value: !Sub ${EnvironmentName}-instance
           - Key: Environment
             Value: !Ref EnvironmentName
-
+  #Autoscaling Group with CPU-based scaling policy
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: NatGateway
