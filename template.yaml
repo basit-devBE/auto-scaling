@@ -424,6 +424,12 @@ Resources:
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: NatGateway
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: 1
+        MaxBatchSize: 1
+        PauseTime: PT10M
+        WaitOnResourceSignals: false
     Properties:
       AutoScalingGroupName: !Sub ${EnvironmentName}-asg
       LaunchTemplate:
