@@ -316,14 +316,19 @@ Resources:
             # Use IMDSv2 when available and fall back to placeholder values so page generation never blocks.
             TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
               -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" || true)
-            META_HEADER=()
-            if [ -n "$TOKEN" ]; then
-              META_HEADER=(-H "X-aws-ec2-metadata-token: $TOKEN")
-            fi
 
-            INSTANCE_ID=$(curl -s "${META_HEADER[@]}" http://169.254.169.254/latest/meta-data/instance-id || echo "unavailable")
-            PRIVATE_IP=$(curl -s "${META_HEADER[@]}" http://169.254.169.254/latest/meta-data/local-ipv4 || echo "unavailable")
-            AZ=$(curl -s "${META_HEADER[@]}" http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "unavailable")
+            get_metadata() {
+              local path="$1"
+              if [ -n "$TOKEN" ]; then
+                curl -s -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/$path" || echo "unavailable"
+              else
+                curl -s "http://169.254.169.254/latest/meta-data/$path" || echo "unavailable"
+              fi
+            }
+
+            INSTANCE_ID=$(get_metadata instance-id)
+            PRIVATE_IP=$(get_metadata local-ipv4)
+            AZ=$(get_metadata placement/availability-zone)
 
             cat > /var/www/html/index.html <<'HTML'
             <!DOCTYPE html>
